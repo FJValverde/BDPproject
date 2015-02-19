@@ -5,13 +5,25 @@
 # Remember to run it with: runApp() in the dir where ui.R and server.R are defined.
 library(shiny)
 
+name <<- c("Ionosphere", "iris") # 
+model <- c("knn")
+
 # The basic code
 shinyUI(pageWithSidebar(
     headerPanel("Evaluating Classifiers with the Entropy Triangle"),
     sidebarPanel(
-        h3("A bit of theory")
+        h1("Data input"),
+        selectInput("dataset", "Select dataset:", 
+                    choices = name, selected = name[1], multiple = FALSE),
+        selectInput("model", "Select type of classifier:", 
+                    choices = model, selected = model[1], multiple = FALSE),
+#        numericInput("delta", "Price Change (%):", 10),
+        submitButton("Run Simulation")
         ),
-    mainPanel(
-        h3("Evaluate a classifier")
-        )
-))
+     mainPanel(
+         h3(textOutput("caption")),
+         plotOutput("etPlot")
+         #verbatimTextOutput("summary")
+     )
+    )
+)

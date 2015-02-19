@@ -7,7 +7,7 @@ Problems with Classifier Evaluation
 ========================================================
 
 In multiclass tasks it is often the case that the class distribution is deeply
-*imbalanced*.
+*unbalanced*.
 
 In this case, the usual assessment tools are overly optimistic (*think of a classifier specializing in the majority class!*)
 <!-- - The accuracy
@@ -40,6 +40,7 @@ Assessing a Classifier
 ========================================================
 
 To assess a classifier on a dataset:
+
 1. Obtain its confusion matrix
 2. Work out the entropies 
 in the balance equation

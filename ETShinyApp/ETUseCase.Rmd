@@ -73,6 +73,24 @@ data(iris)
 summary(iris)
 set.seed(2117)
 
+# the inventory of databases you can access
+name <- c("Ionosphere", "iris") # 
+classVar <- c(35,5)   # ordinal of the class attribute
+className <- c("Class","Species")  # Name of class attribute
+K <- c(2,3)  # No. of classes
+datasets <- data.frame(name,classVar,className,K)
+
+# To select a dataset by name
+evalDataset <- function(dsName){
+    switch(dsName,
+        "iris" = iris,
+        "Ionosphere" = Ionosphere)
+}
+dataset <- evalDataset(dsName)
+dsName <- name[1]  # To be input by some means!
+
+#select the dataset
+
 df <- iris
 class <- iris$Species
 inTrain <- createDataPartition(y=class,
