@@ -1,0 +1,139 @@
+Use case of the Entropy triangle
+========================================================
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring web pages (click the **Help** toolbar button for more details on using R Markdown).
+
+When you click the **Knit HTML** button a web page will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+# Environment construction
+```{r}
+library(ggtern)
+library(entropy)  # To work out the appropriate coordinates.
+library(caret)    # To build the classifiers.
+library(mlbench)  # Many databases for ML tasks
+```
+
+
+```{r}
+#Given a contingency matrix, provide one row of entropy coordinates
+entropies <- function(N,unit="log2",...){
+    Ni <- apply(N,1,sum); Hx <- entropy(Ni,unit="log2",...)
+    Nj <- apply(N,2,sum); Hy <- entropy(Nj,unit="log2",...)
+    dims <- dim(N)
+    Ux <- entropy(rep(1/dims[1],dims[1]),unit="log2",...)
+    Uy <- entropy(rep(1/dims[2],dims[2]),unit="log2",...)
+    Hxy <- entropy(N,unit="log2",...)
+    return(list(
+        Ux = Ux, Uy = Uy, 
+        Hx = Hx, Hy = Hy,
+        Hxy = Hxy
+        )
+    )
+}
+# Generate the entropic coordinates from the component entropies
+# - with split=TRUE, generate independen coordinates for X and Y distributions.
+entropicCoordinates <- function(df,split=FALSE){
+    with(df,
+        if (split){#split coordinates
+              splitDF <- data.frame(
+                  Ux = Ux, Uy = Uy,
+                  DeltaHx = Ux - Hx,
+                  DeltaHy = Uy - Hy,
+                  MIxy = Hx + Hy - Hxy,
+                  VIx = Hxy - Hy,
+                  VIy = Hxy - Hx
+                )
+#               splitDF["VIx"] <- Hx - splitDF$MIxy
+#               splitDF["VIy"] <- Hy - splitDF$MIxy
+              return(splitDF)
+          } else{#not split
+              newDF <- data.frame(
+              Uxy = Ux + Uy,
+              DeltaHxy = Ux - Hx + Uy -Hy,
+              MIxy2 = 2*(Hx + Hy - Hxy),
+              VIxy = Hxy + Hxy - Hx - Hy
+              )
+#            newDF["VIxy"] <- 2*Hxy - Hx - Hy 
+            return(newDF)
+            }
+    )
+}
+#coords <- entropicCoords(entropies(N, unit="log2"))
+#splitCoords <- entropicCoords(entropies(N, unit="log2"), split=TRUE)
+```
+
+# Create the data
+
+The data must be created from (multiclass) classifiers and then transformed into a data frame with the entropic measures.
+
+We'll use the Fisher Iris data throughout, and a stratified partitioning of the database.
+
+```{r}
+data(iris)
+summary(iris)
+set.seed(2117)
+
+df <- iris
+class <- iris$Species
+inTrain <- createDataPartition(y=class,
+                               p=0.80, # Tries to do stratified sampling
+                               list=FALSE)
+training <- df[inTrain,]
+testing <- df[-inTrain,]
+c(nrow(training), nrow(testing))
+```
+
+# Simple classifier evaluation
+
+```{r}
+fit1 <- train(x=training[,-5], y=training[,5], 
+              method="knn",
+              tuneLength = 15,
+              preProcess = c("center", "scale"))
+## obtain a training confusion matrix
+trCM <- confusionMatrix(predict(fit1,training[,-5]), training[,5])
+trTable <- trCM$table # table(predict(fit1,training[,-5]), training[,5])
+trEntropies <- entropies(trTable)
+trCoords <- entropicCoordinates(trEntropies)
+
+## prediction and the test confusion matrix
+predicted <- predict(fit1, testing[,-5])
+teCM <- confusionMatrix(predicted,testing[,5])
+teTabl <- teCM$table #table(predicted,testing[,5])
+teCoords <- entropicCoordinates(entropies(teTable))
+```
+
+# Printing the results in the Entropy Triangle
+
+```{r}
+experiments <- data.frame(
+    training=TRUE,
+    method="knn",
+    MIxy=trCoords$MIxy2/trCoords$Uxy,
+    VIxy=trCoords$VIxy/trCoords$Uxy,
+    DeltaHxy=trCoords$DeltaHxy/trCoords$Uxy)
+
+# The basic plot for the entropy triangle
+plot <- ggtern() +  
+    theme_rgbw() + 
+    theme(complete=FALSE, 
+          axis.tern.showlabels=FALSE,
+          axis.tern.showarrows=TRUE,
+          axis.tern.clockwise=FALSE)
+
+#Plot training points in a certain colour, test in another
+plot <- plot + geom_point(data=experiments, aes(VIxy,MIxy,DeltaHxy))
+
+experiments <- rbind(experiments,
+                     list(training=FALSE,method="knn", 
+                        MIxy=teCoords$MIxy2/teCoords$Uxy,
+                        VIxy=teCoords$VIxy/teCoords$Uxy,
+                        DeltaHxy=teCoords$DeltaHxy/teCoords$Uxy))
+
+#plot training and testing in different colours
+plot + geom_point(data=experiments,
+                  aes(VIxy,MIxy,DeltaHxy,colour=training, shape=training),
+                  size=3) +
+    scale_colour_brewer(palette="Set1")
+```
+
