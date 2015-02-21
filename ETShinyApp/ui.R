@@ -5,20 +5,26 @@
 # Remember to run it with: runApp() in the dir where ui.R and server.R are defined.
 library(shiny)
 
-name <<- c("Ionosphere", "iris") # 
-model <- c("knn")
+#load the data common to ui.R and server.R
+source("helpers.R")
 
 # The basic code
 shinyUI(pageWithSidebar(
     headerPanel("Evaluating Classifiers with the Entropy Triangle"),
     sidebarPanel(
         h1("Data input"),
-        selectInput("dataset", "Select dataset:", 
-                    choices = name, selected = name[1], multiple = FALSE),
-        selectInput("model", "Select type of classifier:", 
-                    choices = model, selected = model[1], multiple = FALSE),
-#        numericInput("delta", "Price Change (%):", 10),
-        submitButton("Run Simulation")
+        checkboxGroupInput("datasets", "Select ALL datasets to classify:",
+                           choices=dsInventory,selected=dsInventory[1]),
+        p("The proportions make these versions of iris more and more unbalanced."),
+    #         selectInput("dataset", "Select dataset:", 
+#                     choices = dsInventory, selected = dsInventory[1], 
+#                     multiple = TRUE),
+        checkboxGroupInput("models", "Select ALL classifiers to apply:",
+                           choices=mInventory,selected=mInventory[1]),
+#         selectInput("model", "Select type of classifier:", 
+#                     choices = mInventory, selected = mInventory[1], multiple = FALSE),
+        submitButton("Run Simulation"),
+        p("Note: Some classifiers may have the same name but differ in the parameters used to train them.")
         ),
      mainPanel(
          h3(textOutput("caption")),
