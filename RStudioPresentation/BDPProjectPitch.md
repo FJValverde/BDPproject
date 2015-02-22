@@ -1,7 +1,7 @@
 Entropic Assessment of Multiclass Classifiers
 ========================================================
 author: Francisco J Valverde
-date: Sun Feb 22 13:50:43 2015
+date: Sun Feb 22 13:55:05 2015
 
 
 Problems with Classifier Evaluation
@@ -40,10 +40,12 @@ in the Entropy Triangle, which is a  De Finetti diagram:
 Example: different classifiers on unbalanced versions of Anderson's iris
 ========================================================
 
+<!--
 
+-->
 
 <!--  --> 
-![plot of chunk unnamed-chunk-1](BDPProjectPitch-figure/unnamed-chunk-1-1.pdf) 
+![plot of chunk unnamed-chunk-1](BDPProjectPitch-figure/unnamed-chunk-1-1.png) 
 ***
 
 <!-- * Making your dataset more unbalanced: -->
@@ -63,5 +65,5 @@ To assess a classifier on a dataset:
 in the balance equation
 3. Represent them in the ET:
 ***
-![plot of chunk unnamed-chunk-2](BDPProjectPitch-figure/unnamed-chunk-2-1.pdf) 
+![plot of chunk unnamed-chunk-2](BDPProjectPitch-figure/unnamed-chunk-2-1.png) 
 -->

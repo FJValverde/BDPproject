@@ -40,9 +40,11 @@ in the Entropy Triangle, which is a  De Finetti diagram:
 Example: different classifiers on unbalanced versions of Anderson's iris
 ========================================================
 
+<!--
 ```{r setup, include=FALSE}
-opts_chunk$set(dev = 'pdf')
+#opts_chunk$set(dev = 'pdf')
 ```
+-->
 
 <!--  --> 
 ```{r, echo=FALSE, fig.width = 10, fig.height = 10}
