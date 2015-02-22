@@ -1,4 +1,4 @@
-A Demonstrator for the Entropy Triangle
+# A Demonstrator for the Entropy Triangle
 
 Some classifiers suffer from the "accuracy paradox": they report extremely good accuracy, but when you deploy them on real data, they suck.
 
