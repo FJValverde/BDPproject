@@ -3,26 +3,23 @@ Entropic Assessment of Multiclass Classifiers
 author: Francisco J Valverde
 date: `r date()`
 
+
 Problems with Classifier Evaluation
 ========================================================
 
 In multiclass tasks it is often the case that the class distribution is deeply
 *unbalanced*.
 
-In this case, the usual assessment tools are overly optimistic (*think of a classifier specializing in the majority class!*)
-<!-- - The accuracy
-- The ROC
-- The confusion matrices (and heatmaps)
--->
+In this case, the usual assessment tools, like **Accuracy** are overly optimistic (*think of a classifier specializing in the majority class!*)
 
-We are going to introduce two tool:
-- An exploratory analysis tools, the **Entropy Triangle**
-- an entropy-modified measure of accuracy **EMA**, that corrects for class imbalance in the datasets.
+I am going to introduce one exploratory analysis tool, the **Entropy Triangle**  which suggest that **Mutual Information** helps understand this effect (and correct it!)
+
+* F. J. Valverde-Albacete and C. Peláaez-Moreno. 100% classification accuracy considered harmful: the normalized information transfer factor explains the accuracy paradox. PLOS ONE, 2014.
 
 Entropy Balance of a Joint Distribution
 ========================================================
 
-Given two R.V. X and Y, the entropies related to them can be decomposed as:
+Given two discrete R.V. $X$ and $Y$, the entropies related to them can be decomposed as:
 <!-- We can write the following *balance equation*: -->
 $$
 \log |X| + \log |Y| = \Delta{H_{P_X \cdot P_Y}} + 2\cdot MI_{P_{XY}} + (H_{P_{X|Y}} + H_{P_{Y|X}})
@@ -33,12 +30,62 @@ $$
 The Entropy Triangle
 ========================================================
 
-The entropy triangle is the De Finetti triangle of these entropies.
+We represent the confusion matrices in normalized coordinates
+$$
+1 = \Delta{H'_{P_X \cdot P_Y}} + 2\cdot MI'_{P_{XY}} + VI'_{P_{XY}}
+$$
+in the Entropy Triangle, which is a  De Finetti diagram:
 ![Entropy Triangle](figures/figure6.png)
 
-Assessing a Classifier
+Example: different classifiers on unbalanced versions of Anderson's iris
 ========================================================
 
+```{r setup, include=FALSE}
+opts_chunk$set(dev = 'pdf')
+```
+
+<!--  --> 
+```{r, echo=FALSE, fig.width = 10, fig.height = 10}
+library(ggtern)
+experiments <- read.csv(file="experiments.csv")
+
+models <- unique(experiments$mExp)
+
+# generate a dummy ternary plot
+plot <- ggtern(data=experiments, aes(VIxy,MIxy,DeltaHxy)) +  
+    theme_rgbw() + 
+    theme(complete=FALSE, 
+          axis.tern.showlabels=FALSE,
+          axis.tern.showarrows=TRUE,
+          axis.tern.clockwise=FALSE)
+
+#Plot training points in a certain colour, test in another
+plot + geom_point(aes(colour=dsExp,
+                      #size=accuracy,
+                      fill=accuracy,
+                      shape=mExp),
+                  #fill="grey",
+                  size=4
+                  ) +
+    #scales
+    scale_colour_brewer(palette="Set1") + 
+    scale_shape_manual(values = (21:25)[1:length(models)]) +
+    scale_fill_gradient(low="white", high="orange") +
+    labs(colour="Dataset", shape="Classifier") # Recipe 10.5, Chang
+
+```
+***
+
+<!-- * Making your dataset more unbalanced: -->
+
+* Using unbalanced datasets:
+
+1. Improves classification Accuracy...! (For different families of classifiers!)
+2. But decreases information transmitted in classification process.
+
+* Take-home advice: always use balanced datasets to evaluate classifiers!
+
+<!--
 To assess a classifier on a dataset:
 
 1. Obtain its confusion matrix
@@ -49,3 +96,4 @@ in the balance equation
 ```{r, echo=FALSE}
 plot(cars)
 ```
+-->

@@ -1,7 +1,8 @@
 Entropic Assessment of Multiclass Classifiers
 ========================================================
 author: Francisco J Valverde
-date: Thu Feb 19 19:14:42 2015
+date: Sun Feb 22 12:10:44 2015
+
 
 Problems with Classifier Evaluation
 ========================================================
@@ -9,20 +10,16 @@ Problems with Classifier Evaluation
 In multiclass tasks it is often the case that the class distribution is deeply
 *unbalanced*.
 
-In this case, the usual assessment tools are overly optimistic (*think of a classifier specializing in the majority class!*)
-<!-- - The accuracy
-- The ROC
-- The confusion matrices (and heatmaps)
--->
+In this case, the usual assessment tools, like **Accuracy** are overly optimistic (*think of a classifier specializing in the majority class!*)
 
-We are going to introduce two tool:
-- An exploratory analysis tools, the **Entropy Triangle**
-- an entropy-modified measure of accuracy **EMA**, that corrects for class imbalance in the datasets.
+I am going to introduce one exploratory analysis tool, the **Entropy Triangle**  which suggest that **Mutual Information** helps understand this effect (and correct it!)
+
+* F. J. Valverde-Albacete and C. Peláaez-Moreno. 100% classification accuracy considered harmful: the normalized information transfer factor explains the accuracy paradox. PLOS ONE, 2014.
 
 Entropy Balance of a Joint Distribution
 ========================================================
 
-Given two R.V. X and Y, the entropies related to them can be decomposed as:
+Given two discrete R.V. $X$ and $Y$, the entropies related to them can be decomposed as:
 <!-- We can write the following *balance equation*: -->
 $$
 \log |X| + \log |Y| = \Delta{H_{P_X \cdot P_Y}} + 2\cdot MI_{P_{XY}} + (H_{P_{X|Y}} + H_{P_{Y|X}})
@@ -33,12 +30,32 @@ $$
 The Entropy Triangle
 ========================================================
 
-The entropy triangle is the De Finetti triangle of these entropies.
+We represent the confusion matrices in normalized coordinates
+$$
+1 = \Delta{H'_{P_X \cdot P_Y}} + 2\cdot MI'_{P_{XY}} + VI'_{P_{XY}}
+$$
+in the Entropy Triangle, which is a  De Finetti diagram:
 ![Entropy Triangle](figures/figure6.png)
 
-Assessing a Classifier
+Example: different classifiers on unbalanced versions of Anderson's iris
 ========================================================
 
+
+
+<!--  --> 
+![plot of chunk unnamed-chunk-1](BDPProjectPitch-figure/unnamed-chunk-1-1.pdf) 
+***
+
+<!-- * Making your dataset more unbalanced: -->
+
+* Using unbalanced datasets:
+
+1. Improves classification Accuracy...! (For different families of classifiers!)
+2. But decreases information transmitted in classification process.
+
+* Take-home advice: always use balanced datasets to evaluate classifiers!
+
+<!--
 To assess a classifier on a dataset:
 
 1. Obtain its confusion matrix
@@ -46,4 +63,5 @@ To assess a classifier on a dataset:
 in the balance equation
 3. Represent them in the ET:
 ***
-![plot of chunk unnamed-chunk-1](BDPProjectPitch-figure/unnamed-chunk-1-1.png) 
+![plot of chunk unnamed-chunk-2](BDPProjectPitch-figure/unnamed-chunk-2-1.pdf) 
+-->

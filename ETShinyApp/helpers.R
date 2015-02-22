@@ -3,6 +3,10 @@
 #http://shiny.rstudio.com/tutorial/lesson5/
 library(caret)    # To build the classifiers.
 library(mlbench)  # Many databases for ML tasks: Ionosphere
+library(C50)
+library(e1071)
+library(RWeka)
+library(klaR)
 
 cat('Building the database of models...')
 automatic <- {FALSE}#;TRUE}

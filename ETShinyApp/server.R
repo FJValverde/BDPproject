@@ -124,6 +124,7 @@ evalModelOnDataset <- function(model,dataset){
     return(list(mExp=model,
                 dsExp=dataset,
                 tableExp=expTable, # Bof!
+                accExp=sum(diag(expTable))/sum(expTable), #max(fit$results$Accuracy),
                 MIxy=ec$MIxy2/ec$Uxy,
                 VIxy=ec$VIxy/ec$Uxy,
                 DeltaHxy=ec$DeltaHxy/ec$Uxy))
@@ -144,20 +145,25 @@ applyModelsDatasets <- function(models,datasets){
     exp <- data.frame(mExp = rep(models,each=J), dsExp=rep(datasets,I),
                       VIxy=numeric(n),
                       MIxy=numeric(n),
-                      DeltaHxy=numeric(n))
+                      DeltaHxy=numeric(n),
+                      confMat=numeric(n),
+                      accuracy=numeric(n))
     #rowNames <- c("mExp", "dsExp", "VIxy", "MIxy", "DeltaHxy")
     for(i in 1:I){
         for(j in 1:J){
             res <- evalModelOnDataset(models[i],datasets[j])
-#             d <- runif(3); d <- d/sum(d)     
-#             # Store the results
-#             exp$VIxy[(i-1)*J+j] <- d[1]
-#             exp$MIxy[(i-1)*J+j] <- d[2]
-#             exp$DeltaHxy[(i-1)*J+j] <- d[3]
             # Store the results
             exp$VIxy[(i-1)*J+j] <- res$VIxy
             exp$MIxy[(i-1)*J+j] <- res$MIxy
             exp$DeltaHxy[(i-1)*J+j] <- res$DeltaHxy
+ #           exp$confMat <- res$tableExp
+            exp$accuracy[(i-1)*J+j] <- res$accExp
+            #             d <- runif(3); d <- d/sum(d)     
+            #             # Store the results
+            #             exp$VIxy[(i-1)*J+j] <- d[1]
+            #             exp$MIxy[(i-1)*J+j] <- d[2]
+            #             exp$DeltaHxy[(i-1)*J+j] <- d[3]
+            
         }
     }
     return(exp)
@@ -215,9 +221,11 @@ shinyServer(
 #             mExp <- c("knn","logreg","svm")
 #             experiments <- data.frame(dsExp,mExp,VIxy,MIxy,DeltaHxy)
             experiments <- applyModelsDatasets(models,datasets)
+            print(experiments)
+            write.csv(experiments, file="experiments.csv")  # To plot them in the pitch
 
             # generate a dummy ternary plot
-            plot <- ggtern() +  
+            plot <- ggtern(data=experiments, aes(VIxy,MIxy,DeltaHxy)) +  
                 theme_rgbw() + 
                 theme(complete=FALSE, 
                       axis.tern.showlabels=FALSE,
@@ -225,11 +233,23 @@ shinyServer(
                       axis.tern.clockwise=FALSE)
 
             #Plot training points in a certain colour, test in another
-            plot + geom_point(data=experiments,
-                              aes(VIxy,MIxy,DeltaHxy,colour=dsExp,shape=mExp),
-                              size=3) +
-                labs(colour="Dataset", shape="Classifier") + # Recipe 10.5, Chang
-                scale_colour_brewer(palette="Set1")
+            plot + geom_point(aes(colour=dsExp,
+                                  #size=accuracy,
+                                  fill=accuracy,
+                                  shape=mExp),
+                              #fill="grey",
+                              size=4
+                              ) +
+                #scales
+                scale_colour_brewer(palette="Set1") + 
+                scale_shape_manual(values = (21:25)[1:length(models)]) +
+                #scale_size_continuous(range = c(2.5, 7.5)) +
+                #scale_fill_gradient(low = "green", high = "red") +
+                scale_fill_gradient(low="white", high="orange") +
+                #shape=c(21:25),
+                #shape=21,
+                #size=3) +
+                labs(colour="Dataset", shape="Classifier") # Recipe 10.5, Chang
         })
               
 #         # Generate a summary of the dataset
