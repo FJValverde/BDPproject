@@ -36,7 +36,7 @@ shinyUI(pageWithSidebar(
          p("* The more to the right, the higher the classifier accuracy!"),
          p("* The more to the left, the more balanced the dataset!"),
          p("* As the database gets more unbalanced, the classifier loses the capability to 'transmit' information but gains in accuracy!"),
-         h4("Note: the deployed application in shinyapps does not seem to be able to load the package for all classifiers. The full set of experiments run on local can be found in the accompanying presentation.")
+         h4("Note: the deployed application in shinyapps does not seem to be able to load the package for single rule classification. The full set of experiments run on local can be found in the accompanying presentation.")
      )
     )
 )

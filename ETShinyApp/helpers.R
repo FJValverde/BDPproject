@@ -17,6 +17,9 @@ chosenModels <- if (automatic){
     modelDF$model %in% c("knn", "nb", "OneR", "C5.0Tree")
 }
 modelDF <- modelDF[chosenModels,] #Select those for classification
+#erase one of the nb models: What a hack!
+modelDF <- modelDF[-(which(modelDF$model=="nb")[2]), ]
+print(modelDF)
 #modelInfo <- getModelInfo(modelDF$model,regex=FALSE)  #All the information from the models
 getModelLabel <- function(m){
     info <- getModelInfo(m,regex=FALSE)
@@ -46,7 +49,7 @@ className <- c("Class","Species",
                "Species", "Species", "Species")  # Name of class attribute
 K <- c(2, 3, 2, 2, 2, 3, 3, 3)  # No. of classes
 dfDS <- data.frame(dsName,classVar,className,K)
-print(dfDS)
+#print(dfDS)
 iris2 <- iris[c(1:50,51:75,101:125),]  # iris 50/25/25
 iris3 <- iris[c(1:50,51:70,101:110),]  # iris 50/20/10
 iris4 <- iris[c(1:50,51:60,101:105),]  # iris 50/10/05
