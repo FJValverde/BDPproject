@@ -1,7 +1,7 @@
 Entropic Assessment of Multiclass Classifiers
 ========================================================
 author: Francisco J Valverde
-date: Sun Feb 22 13:00:40 2015
+date: Sun Feb 22 19:55:31 2015
 
 
 Problems with Classifier Evaluation
